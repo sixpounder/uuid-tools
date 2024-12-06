@@ -1,0 +1,7 @@
+.ctc-wrapper .ctc-icon {
+  opacity: 0;
+}
+
+.ctc-wrapper:hover .ctc-icon {
+  opacity: 1;
+}
