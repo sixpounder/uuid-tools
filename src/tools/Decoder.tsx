@@ -3,6 +3,7 @@ import { Tool } from "./Tool";
 import { isEmpty, isNil, isString } from "lodash-es";
 import { stringify } from "uuid";
 import { CopyToClipboard } from "../components/CopyToClipboard";
+import { base64ToArrayBuffer } from "../lib/encoding";
 
 export function Decoder() {
   const [encoded, setEncoded] = useState<string>("");
@@ -52,14 +53,4 @@ export function Decoder() {
       </div>
     </Tool>
   );
-}
-
-function base64ToArrayBuffer(base64: string) {
-  const binaryString = atob(base64);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-
-  return bytes;
 }

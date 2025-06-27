@@ -35,7 +35,13 @@ export function CopyToClipboard(
     );
   }
 
-  useEffect(() => {}, [notification]);
+  useEffect(() => {
+    return () => {
+      if (notificationTimeout) {
+        clearTimeout(notificationTimeout);
+      }
+    };
+  }, [notificationTimeout]);
 
   function classBindings() {
     return `${props.className} ctc-wrapper relative p-2 cursor-pointer rounded dark:hover:bg-gray-500 hover:bg-gray-200 flex flex-row justify-between items-center`;

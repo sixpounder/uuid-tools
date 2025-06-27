@@ -3,6 +3,7 @@ import { Tool } from "./Tool";
 import { parse, validate } from "uuid";
 import { isEmpty, isNil, isString } from "lodash-es";
 import { CopyToClipboard } from "../components/CopyToClipboard";
+import { arrayBufferToBase64 } from "../lib/encoding";
 
 export function Encoder() {
   const [uuid, setUuid] = useState<string>("");
@@ -13,7 +14,7 @@ export function Encoder() {
     setInvalid(false);
     if (isString(uuid) && !isEmpty(uuid)) {
       if (validate(uuid)) {
-        setEncoded(_arrayBufferToBase64(parse(uuid)));
+        setEncoded(arrayBufferToBase64(parse(uuid)));
         setInvalid(false);
       } else {
         setInvalid(true);
@@ -50,14 +51,4 @@ export function Encoder() {
       </div>
     </Tool>
   );
-}
-
-function _arrayBufferToBase64(buffer: Uint8Array) {
-  let binary = "";
-  const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
 }

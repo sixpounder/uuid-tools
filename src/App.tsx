@@ -1,38 +1,116 @@
-import './App.css'
-import { Decoder } from './tools/Decoder'
-import { Encoder } from './tools/Encoder'
-import { RandomUUID } from './tools/RandomUUID'
+import { parse, stringify, validate } from "uuid";
+import "./App.css";
+import InputBox from "./components/InputBox";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { isEmpty, isNil, isString } from "lodash-es";
+import { arrayBufferToBase64, base64ToArrayBuffer } from "./lib/encoding";
+import { Tool } from "./tools/Tool";
+import { CopyToClipboard } from "./components/CopyToClipboard";
 
 function App() {
-  
+  const [sourceValue, setSourceValue] = useState("");
+
+  const [decoded, setDecoded] = useState<{
+    valid: boolean;
+    content?: string | undefined;
+  }>({ valid: true, content: "" });
+
+  const [encoded, setEncoded] = useState<{
+    valid: boolean;
+    content?: string | undefined;
+  }>({ valid: true, content: "" });
+
+  const [toolsPanelClassName, setToolsPanelClassName] = useState("opacity-0");
+
+  const onValueChanged = useCallback((value: string) => {
+    setSourceValue(value);
+  }, []);
+
+  const sourceIsUUID = useMemo(() => validate(sourceValue), [sourceValue]);
+  const sourceIsEncodedUUID = useMemo(
+    () => decoded.valid && !isEmpty(decoded.content),
+    [decoded]
+  );
+
+  const isSourceEmpty = useMemo(() => {
+    return isEmpty(sourceValue);
+  }, [sourceValue]);
+
+  const isSourceValid = useMemo(
+    () => isSourceEmpty || sourceIsUUID || sourceIsEncodedUUID,
+    [isSourceEmpty, sourceIsUUID, sourceIsEncodedUUID]
+  );
+
+  useEffect(() => {
+    if (sourceIsUUID) {
+      setDecoded({ valid: true, content: sourceValue });
+    } else if (isString(sourceValue) && !isEmpty(sourceValue)) {
+      try {
+        const bytes = base64ToArrayBuffer(sourceValue);
+        setDecoded({ valid: true, content: stringify(bytes) });
+      } catch {
+        setDecoded({ valid: false });
+      }
+    } else {
+      setDecoded({ valid: true, content: undefined });
+    }
+  }, [sourceIsUUID, sourceValue]);
+
+  useEffect(() => {
+    if (sourceIsUUID && isString(sourceValue) && !isEmpty(sourceValue)) {
+      setEncoded({
+        valid: true,
+        content: arrayBufferToBase64(parse(sourceValue)),
+      });
+    } else {
+      setEncoded({ valid: true, content: sourceValue });
+    }
+  }, [sourceIsUUID, sourceValue]);
+
+  useEffect(() => {
+    if (isSourceValid && !isSourceEmpty) {
+      setToolsPanelClassName("opacity-100");
+    } else {
+      setToolsPanelClassName("opacity-0");
+    }
+  }, [isSourceValid, isSourceEmpty]);
+
   return (
-    <main className='font-sans h-screen dark:bg-gray-900 dark:text-gray-50 overflow-y-auto'>
-      <div className='container mx-auto p-4 h-full'>
-        <div id="explainer" className='text-justify py-8'>
-          <p>
-            <em>UUID Tools</em> is a set of utilities to work with UUIDs and save yourself some major headaches.
-          </p>
-        </div>
-        <div className='grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4'>
-          <div className='space-y-4'>
-            <div className='rounded shadow border border-gray-500 dark:border-gray-600 p-4'>
-              <Encoder />
-            </div>
+    <main className="font-sans h-screen dark:bg-gray-900 dark:text-gray-50 overflow-y-auto">
+      <div className="container mx-auto p-4 max-w-4xl h-full min-h-screen flex flex-col align-middle justify-center items-center">
+        <InputBox
+          placeholder="Enter a UUID or a base64 encoding of a UUID bytes"
+          className={isSourceValid ? "" : "border-red-500"}
+          onValueChanged={onValueChanged}
+        ></InputBox>
+
+        {isSourceValid && !isSourceEmpty && (
+          <div
+            className={`grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 mt-10 transition-opacity duration-500 ease-in opacity-0 animate-fade-in ${toolsPanelClassName}`}
+          >
+            {decoded.valid && decoded.content && (
+              <Tool description="Decoded from a base64 representation of its bytes">
+                <CopyToClipboard
+                  className="p-2 cursor-pointer rounded font-mono text-xl"
+                  text={decoded.content ?? ""}
+                  enabled={!isNil(decoded.content)}
+                ></CopyToClipboard>
+              </Tool>
+            )}
+            {encoded.valid && encoded.content && (
+              <Tool description="Base64 representation of the UUID bytes">
+                <CopyToClipboard
+                  className="p-2 cursor-pointer rounded font-mono text-xl"
+                  text={encoded.content ?? ""}
+                  enabled={!isNil(encoded.content)}
+                ></CopyToClipboard>
+              </Tool>
+            )}
           </div>
-          <div className='space-y-4'>
-            <div className='rounded shadow border border-gray-500 dark:border-gray-600 p-4'>
-              <Decoder />
-            </div>
-          </div>
-          <div className='space-y-4'>
-            <div className='rounded shadow border border-gray-500 dark:border-gray-600 p-4'>
-              <RandomUUID />
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;
