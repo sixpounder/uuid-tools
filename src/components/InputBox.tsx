@@ -1,7 +1,7 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from "react";
 import { v4 } from "uuid";
 import { Button } from "./Button";
-import { FaDice } from "react-icons/fa";
+import { FaChevronDown, FaDice } from "react-icons/fa";
 
 export interface InputBoxProps {
   placeholder: string;
@@ -29,7 +29,7 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
 
   return (
     <div
-      className={`flex items-center rounded-full border border-input p-1.5 h-20 w-full shadow-md sm:text-sm md:text-sm lg:text-lg ${className}`}
+      className={`flex items-center rounded-full border border-input p-1.5 h-20 w-full shadow-md sm:text-lg md:text-xl lg:text-xl ${className}`}
     >
       <input
         ref={nativeInput}
@@ -45,10 +45,13 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
         className={`block h-full w-full rounded bg-transparent px-3 py-1 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 placeholder-opacity-25`}
       />
       <Button
-        className="border-0 hover:text-violet-400 text-4xl"
+        className="border-0 hover:text-fuchsia-700 text-4xl mr-0 pr-0 shadow-none"
         onClick={() => handleGenerate()}
       >
         <FaDice></FaDice>
+      </Button>
+      <Button className="border-0 hover:text-fuchsia-700 text-xl px-0 w-4 mr-4 shadow-none">
+        <FaChevronDown></FaChevronDown>
       </Button>
     </div>
   );
