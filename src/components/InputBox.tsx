@@ -1,7 +1,18 @@
-import React, { MutableRefObject, useEffect, useRef, useState } from "react";
-import { v4 } from "uuid";
+import React, {
+  MutableRefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "./Button";
 import { FaChevronDown, FaDice } from "react-icons/fa";
+import { Popover, PopoverContent, PopoverTrigger } from "./usePopover";
+import { VersionSelector } from "./VersionSelector";
+import { UUIDVersion } from "../lib/provider";
+import { GeneratorContext } from "../context/generatorContext";
 
 export interface InputBoxProps {
   placeholder: string;
@@ -15,10 +26,13 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
   className,
 }: Partial<InputBoxProps>) => {
   const nativeInput: MutableRefObject<HTMLInputElement | null> = useRef(null);
+  const dropdownButtonRef = useRef<HTMLButtonElement | null>(null);
   const [value, setValue] = useState("");
 
+  const generatorContext = useContext(GeneratorContext);
+
   const handleGenerate = () => {
-    setValue(v4());
+    setValue(generatorContext.selected.provider());
   };
 
   useEffect(() => {
@@ -27,9 +41,19 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
     }
   }, [onValueChanged, value]);
 
+  const generatorLabel = useMemo(() => {
+    return generatorContext.selected.name;
+  }, [generatorContext.selected]);
+
+  const onVersionSelected = useCallback(
+    (version: UUIDVersion): void => {
+      generatorContext.setSelected(version);
+    },
+    [generatorContext]
+  );
   return (
     <div
-      className={`flex items-center rounded-full border border-input p-1.5 h-20 w-full shadow-md sm:text-lg md:text-xl lg:text-xl ${className}`}
+      className={`flex items-center justify-start rounded-full border border-input p-1.5 h-20 w-full shadow-md sm:text-lg md:text-xl lg:text-xl ${className}`}
     >
       <input
         ref={nativeInput}
@@ -42,17 +66,28 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
           nativeInput.current?.select();
         }}
         placeholder={placeholder ?? ""}
-        className={`block h-full w-full rounded bg-transparent px-3 py-1 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 placeholder-opacity-25`}
+        className={`block h-full w-full rounded bg-transparent px-3 py-1 transition-colors outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50 placeholder-opacity-25`}
       />
       <Button
-        className="border-0 hover:text-fuchsia-700 text-4xl mr-0 pr-0 shadow-none"
+        className="border-0 hover:text-fuchsia-700 text-4xl m-0 p-0 shadow-none"
         onClick={() => handleGenerate()}
       >
         <FaDice></FaDice>
       </Button>
-      <Button className="border-0 hover:text-fuchsia-700 text-xl px-0 w-4 mr-4 shadow-none">
-        <FaChevronDown></FaChevronDown>
-      </Button>
+      <Popover>
+        <PopoverTrigger>
+          <Button
+            ref={dropdownButtonRef}
+            className="border-0 hover:text-fuchsia-700 p-0 w-8 mr-2 shadow-none inline-flex flex-row gap-1 px-0"
+          >
+            <span>{generatorLabel}</span>
+            <FaChevronDown></FaChevronDown>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="Popover">
+          <VersionSelector onSelected={onVersionSelected}></VersionSelector>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };

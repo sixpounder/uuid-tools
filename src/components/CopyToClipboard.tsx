@@ -44,12 +44,17 @@ export function CopyToClipboard(
   }, [notificationTimeout]);
 
   function classBindings() {
-    return `${props.className} ctc-wrapper relative p-2 cursor-pointer rounded dark:hover:bg-gray-500 hover:bg-gray-200 flex flex-row justify-between items-center`;
+    return `ctc-wrapper relative p-2 cursor-pointer rounded dark:hover:bg-gray-500 hover:bg-gray-200 flex flex-row justify-between items-center`;
   }
 
   return (
     <div className={classBindings()} onClick={copy}>
-      <span title={props.title ?? "Copy to clipboard"}>{props.text}</span>
+      <span
+        className={props.className}
+        title={props.title ?? "Copy to clipboard"}
+      >
+        {props.text}
+      </span>
       <span className="ctc-icon ml-2">
         <FiCopy></FiCopy>
       </span>
