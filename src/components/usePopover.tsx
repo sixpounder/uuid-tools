@@ -147,6 +147,7 @@ export const PopoverTrigger = forwardRef<
     <div
       ref={ref}
       data-state={context.open ? "open" : "closed"}
+      role="button"
       {...context.getReferenceProps(props)}
     >
       {children}

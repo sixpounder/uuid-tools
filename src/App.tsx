@@ -103,7 +103,7 @@ function App() {
               className={`grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 mt-10 transition-opacity duration-500 ease-in opacity-0 animate-fade-in ${toolsPanelClassName}`}
             >
               {decoded.valid && decoded.content && (
-                <Tool description="Decoded from a base64 representation of its bytes">
+                <Tool description="Plain UUID">
                   <CopyToClipboard
                     className="font-mono text-xl"
                     text={decoded.content ?? ""}

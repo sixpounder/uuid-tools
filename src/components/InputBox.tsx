@@ -66,9 +66,11 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
           nativeInput.current?.select();
         }}
         placeholder={placeholder ?? ""}
+        aria-label={placeholder ?? ""}
         className={`block h-full w-full rounded bg-transparent px-3 py-1 transition-colors outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50 placeholder-opacity-25`}
       />
       <Button
+        name="Generate random value"
         className="border-0 hover:text-fuchsia-700 text-4xl m-0 p-0 shadow-none"
         onClick={() => handleGenerate()}
       >
@@ -78,6 +80,7 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
         <PopoverTrigger>
           <Button
             ref={dropdownButtonRef}
+            name="Select generator version"
             className="border-0 hover:text-fuchsia-700 p-0 w-8 mr-2 shadow-none inline-flex flex-row gap-1 px-0"
           >
             <span>{generatorLabel}</span>
