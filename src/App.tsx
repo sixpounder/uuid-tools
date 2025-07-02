@@ -16,32 +16,6 @@ import { GeneratorContextProvider } from "./context/generatorContext";
 function App() {
   const [sourceValue, setSourceValue] = useState("");
 
-  const [decoded, setDecoded] = useState<{
-    valid: boolean;
-    content?: string | undefined;
-  }>({ valid: true, content: "" });
-
-  const [encoded, setEncoded] = useState<{
-    valid: boolean;
-    content?: string | undefined;
-  }>({ valid: true, content: "" });
-
-  const [uuidBits, setUuidBits] = useState<{
-    valid: boolean;
-    content?: string | undefined;
-  }>({
-    valid: true,
-    content: "",
-  });
-
-  const [uuidBigInt, setUuidBigInt] = useState<{
-    valid: boolean;
-    content?: bigint | undefined;
-  }>({
-    valid: true,
-    content: undefined,
-  });
-
   const [toolsPanelClassName, setToolsPanelClassName] = useState("opacity-0");
 
   const onValueChanged = useCallback((value: string) => {
@@ -49,6 +23,22 @@ function App() {
   }, []);
 
   const sourceIsUUID = useMemo(() => validate(sourceValue), [sourceValue]);
+
+  const decoded = useMemo(() => {
+    if (sourceIsUUID) {
+      return { valid: true, content: sourceValue };
+    } else if (isString(sourceValue) && !isEmpty(sourceValue)) {
+      try {
+        const bytes = base64ToArrayBuffer(sourceValue);
+        return { valid: true, content: stringify(bytes) };
+      } catch {
+        return { valid: false };
+      }
+    } else {
+      return { valid: true, content: undefined };
+    }
+  }, [sourceIsUUID, sourceValue]);
+
   const sourceIsEncodedUUID = useMemo(
     () => decoded.valid && !isEmpty(decoded.content),
     [decoded]
@@ -63,42 +53,30 @@ function App() {
     [isSourceEmpty, sourceIsUUID, sourceIsEncodedUUID]
   );
 
-  useEffect(() => {
-    if (sourceIsUUID) {
-      setDecoded({ valid: true, content: sourceValue });
-    } else if (isString(sourceValue) && !isEmpty(sourceValue)) {
-      try {
-        const bytes = base64ToArrayBuffer(sourceValue);
-        setDecoded({ valid: true, content: stringify(bytes) });
-      } catch {
-        setDecoded({ valid: false });
-      }
-    } else {
-      setDecoded({ valid: true, content: undefined });
-    }
-  }, [sourceIsUUID, sourceValue]);
-
-  useEffect(() => {
+  const encoded = useMemo(() => {
     if (sourceIsUUID && isString(sourceValue) && !isEmpty(sourceValue)) {
-      setEncoded({
+      return {
         valid: true,
         content: arrayBufferToBase64(parse(sourceValue)),
-      });
+      };
     } else {
-      setEncoded({ valid: true, content: sourceValue });
+      return { valid: true, content: sourceValue };
     }
   }, [sourceIsUUID, sourceValue]);
 
-  useEffect(() => {
+  const uuidBits = useMemo(() => {
     if (decoded.valid && decoded.content) {
-      setUuidBits({ valid: true, content: uuidToBits(decoded.content) });
-      setUuidBigInt({
-        valid: true,
-        content: uuidToBigInt(decoded.content),
-      });
+      return { valid: true, content: uuidToBits(decoded.content) };
     } else {
-      setUuidBits({ valid: true, content: "" });
-      setUuidBigInt({ valid: true, content: undefined });
+      return { valid: true, content: "" };
+    }
+  }, [decoded.valid, decoded.content]);
+
+  const uuidBigInt = useMemo(() => {
+    if (decoded.valid && decoded.content) {
+      return { valid: true, content: uuidToBigInt(decoded.content) };
+    } else {
+      return { valid: true, content: undefined };
     }
   }, [decoded.valid, decoded.content]);
 
