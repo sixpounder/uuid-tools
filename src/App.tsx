@@ -90,14 +90,17 @@ function App() {
   }, [sourceIsUUID, sourceValue]);
 
   useEffect(() => {
-    if (isSourceValid && !isSourceEmpty) {
-      setUuidBits({ valid: true, content: uuidToBits(sourceValue) });
-      setUuidBigInt({ valid: true, content: uuidToBigInt(sourceValue) });
+    if (decoded.valid && decoded.content) {
+      setUuidBits({ valid: true, content: uuidToBits(decoded.content) });
+      setUuidBigInt({
+        valid: true,
+        content: uuidToBigInt(decoded.content),
+      });
     } else {
       setUuidBits({ valid: true, content: "" });
       setUuidBigInt({ valid: true, content: undefined });
     }
-  }, [isSourceValid, sourceValue, isSourceEmpty]);
+  }, [decoded.valid, decoded.content]);
 
   useEffect(() => {
     if (isSourceValid && !isSourceEmpty) {
