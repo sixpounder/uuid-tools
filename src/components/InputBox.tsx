@@ -9,7 +9,9 @@ import React, {
 } from "react";
 import { Button } from "./Button";
 import { FaChevronDown, FaDice } from "react-icons/fa";
-import { Popover, PopoverContent, PopoverTrigger } from "./usePopover";
+import { PopoverContent } from "./popover/PopoverContent";
+import { PopoverTrigger } from "./popover/PopoverTrigger";
+import { Popover } from "./popover/Popover";
 import { VersionSelector } from "./VersionSelector";
 import { UUIDVersion } from "../lib/provider";
 import { GeneratorContext } from "../context/generatorContext";
