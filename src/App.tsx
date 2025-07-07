@@ -12,6 +12,7 @@ import {
 import { Tool } from "./tools/Tool";
 import { CopyToClipboard } from "./components/CopyToClipboard";
 import { GeneratorContextProvider } from "./context/generatorContext";
+import Shortcuts from "./components/Shortcuts";
 
 function App() {
   const [sourceValue, setSourceValue] = useState("");
@@ -41,7 +42,7 @@ function App() {
 
   const sourceIsEncodedUUID = useMemo(
     () => decoded.valid && !isEmpty(decoded.content),
-    [decoded]
+    [decoded],
   );
 
   const isSourceEmpty = useMemo(() => {
@@ -50,7 +51,7 @@ function App() {
 
   const isSourceValid = useMemo(
     () => isSourceEmpty || sourceIsUUID || sourceIsEncodedUUID,
-    [isSourceEmpty, sourceIsUUID, sourceIsEncodedUUID]
+    [isSourceEmpty, sourceIsUUID, sourceIsEncodedUUID],
   );
 
   const encoded = useMemo(() => {
@@ -90,13 +91,14 @@ function App() {
 
   return (
     <GeneratorContextProvider>
-      <main className="font-sans h-screen dark:bg-gray-900 dark:text-gray-50 overflow-y-auto">
-        <div className="container mx-auto p-4 max-w-4xl h-full min-h-screen flex flex-col align-middle justify-center items-center">
+      <main className="font-sans min-h-screen flex items-center dark:bg-gray-900 dark:text-gray-50 overflow-y-auto">
+        <div className="container overflow-y-auto mx-auto max-w-4xl h-full flex flex-col align-middle justify-center items-center p-4 pb-20">
           <InputBox
             placeholder="Enter a UUID or a base64 encoding of a UUID bytes"
             className={isSourceValid ? "" : "border-red-500"}
             onValueChanged={onValueChanged}
-          ></InputBox>
+          >
+          </InputBox>
 
           {isSourceValid && !isSourceEmpty && (
             <div
@@ -108,7 +110,8 @@ function App() {
                     className="font-mono text-xl"
                     text={decoded.content ?? ""}
                     enabled={!isNil(decoded.content)}
-                  ></CopyToClipboard>
+                  >
+                  </CopyToClipboard>
                 </Tool>
               )}
               {encoded.valid && encoded.content && (
@@ -117,7 +120,8 @@ function App() {
                     className="font-mono text-xl"
                     text={encoded.content ?? ""}
                     enabled={!isNil(encoded.content)}
-                  ></CopyToClipboard>
+                  >
+                  </CopyToClipboard>
                 </Tool>
               )}
 
@@ -126,7 +130,8 @@ function App() {
                   className="font-mono text-xl wrap-anywhere"
                   text={uuidBits.content ?? ""}
                   enabled={!isNil(uuidBits)}
-                ></CopyToClipboard>
+                >
+                </CopyToClipboard>
               </Tool>
 
               <Tool description="Integer representation (128 bit)">
@@ -134,11 +139,15 @@ function App() {
                   className="font-mono text-xl wrap-anywhere"
                   text={uuidBigInt.content?.toString() ?? ""}
                   enabled={!isNil(uuidBigInt)}
-                ></CopyToClipboard>
+                >
+                </CopyToClipboard>
               </Tool>
             </div>
           )}
         </div>
+        <footer className="flex flex-row justify-center items-center fixed bottom-0 w-full backdrop-blur-lg p-4">
+          <Shortcuts></Shortcuts>
+        </footer>
       </main>
     </GeneratorContextProvider>
   );

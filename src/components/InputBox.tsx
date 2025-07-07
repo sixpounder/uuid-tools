@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./usePopover";
 import { VersionSelector } from "./VersionSelector";
 import { UUIDVersion } from "../lib/provider";
 import { GeneratorContext } from "../context/generatorContext";
+import { clamp } from "lodash-es";
 
 export interface InputBoxProps {
   placeholder: string;
@@ -31,9 +32,9 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
 
   const generatorContext = useContext(GeneratorContext);
 
-  const handleGenerate = () => {
+  const handleGenerate = useCallback(() => {
     setValue(generatorContext.selected.provider());
-  };
+  }, [generatorContext.selected]);
 
   useEffect(() => {
     if (onValueChanged) {
@@ -49,8 +50,34 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
     (version: UUIDVersion): void => {
       generatorContext.setSelected(version);
     },
-    [generatorContext]
+    [generatorContext],
   );
+
+  const onShortcut = useCallback((ev: KeyboardEvent) => {
+    if (ev.key === "r") {
+      handleGenerate();
+    }
+
+    if (ev.key === "ArrowDown") {
+      const nextIndex = clamp(generatorContext.versions.indexOf(generatorContext.selected) + 1, 0, generatorContext.versions.length - 1);
+      generatorContext.setSelected(generatorContext.versions[nextIndex]);
+    }
+
+    if (ev.key === "ArrowUp") {
+      const nextIndex = clamp(generatorContext.versions.indexOf(generatorContext.selected) - 1, 0, generatorContext.versions.length - 1);
+      generatorContext.setSelected(generatorContext.versions[nextIndex]);
+    }
+  }, [handleGenerate, generatorContext]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", onShortcut);
+
+      return () => {
+        window.removeEventListener("keydown", onShortcut);
+      };
+    }
+  }, [onShortcut]);
   return (
     <div
       className={`flex items-center justify-start rounded-full border border-input p-1.5 h-20 w-full shadow-md sm:text-lg md:text-xl lg:text-xl ${className}`}
@@ -59,6 +86,7 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
         ref={nativeInput}
         type="text"
         value={value}
+        onKeyDown={(e) => e.stopPropagation()}
         onChange={(e) => {
           setValue(e.target.value);
         }}
