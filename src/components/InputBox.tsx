@@ -54,6 +54,8 @@ const InputBox: React.FC<Partial<InputBoxProps>> = ({
   );
 
   const onShortcut = useCallback((ev: KeyboardEvent) => {
+    if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    
     if (ev.key === "r") {
       handleGenerate();
     }
