@@ -1,8 +1,8 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext } from "react";
 import { UUIDVersion } from "../lib/provider";
 import { v1, v4, v6, v7 } from "uuid";
 
-const versions: UUIDVersion[] = [
+export const versions: UUIDVersion[] = [
   {
     name: "v1",
     description: "Time-based UUID",
@@ -37,16 +37,3 @@ export const GeneratorContext = createContext<GeneratorContextType>({
   versions,
 });
 
-export const GeneratorContextProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
-  const [selected, setSelected] = useState<UUIDVersion>(versions[1]);
-
-  return (
-    <GeneratorContext.Provider value={{ selected, setSelected, versions }}>
-      {children}
-    </GeneratorContext.Provider>
-  );
-};

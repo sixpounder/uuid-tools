@@ -11,7 +11,7 @@ import {
 } from "./lib/encoding";
 import { Tool } from "./tools/Tool";
 import { CopyToClipboard } from "./components/CopyToClipboard";
-import { GeneratorContextProvider } from "./context/generatorContext";
+import { GeneratorContextProvider } from "./context/GeneratorContextProvider";
 import Shortcuts from "./components/Shortcuts";
 
 function App() {
