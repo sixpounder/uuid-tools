@@ -1,6 +1,7 @@
-import { PropsWithoutRef, useEffect, useState } from "react";
+import { PropsWithoutRef, useState } from "react";
 import { FiCopy } from "react-icons/fi";
 import "./CopyToClipboard.css";
+import { useDelay } from "../hooks/useDelay";
 
 export function CopyToClipboard(
   props: PropsWithoutRef<{
@@ -11,9 +12,6 @@ export function CopyToClipboard(
   }>
 ) {
   const [notification, setNotification] = useState(false);
-  const [notificationTimeout, setNotificationTimeout] = useState<
-    number | undefined
-  >();
 
   function copy() {
     if (props.enabled) {
@@ -22,26 +20,7 @@ export function CopyToClipboard(
     }
   }
 
-  function notify() {
-    setNotification(true);
-    if (notificationTimeout) {
-      clearTimeout(notificationTimeout);
-    }
-
-    setNotificationTimeout(
-      setTimeout(() => {
-        setNotification(false);
-      }, 850)
-    );
-  }
-
-  useEffect(() => {
-    return () => {
-      if (notificationTimeout) {
-        clearTimeout(notificationTimeout);
-      }
-    };
-  }, [notificationTimeout]);
+  const notify = useDelay(() => setNotification(false), () => setNotification(true), 850);
 
   function classBindings() {
     return `ctc-wrapper relative p-2 cursor-pointer rounded dark:hover:bg-gray-500 hover:bg-gray-200 flex flex-row justify-between items-center`;
