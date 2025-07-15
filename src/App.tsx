@@ -13,6 +13,7 @@ import { Tool } from "./tools/Tool";
 import { CopyToClipboard } from "./components/CopyToClipboard";
 import { GeneratorContextProvider } from "./context/GeneratorContextProvider";
 import Shortcuts from "./components/Shortcuts";
+import Credits from "./components/Credits";
 
 function App() {
   const [sourceValue, setSourceValue] = useState("");
@@ -145,8 +146,9 @@ function App() {
             </div>
           )}
         </div>
-        <footer className="flex flex-row justify-center items-center fixed bottom-0 w-full backdrop-blur-lg p-4">
+        <footer className="flex flex-col gap-2 justify-center items-center fixed bottom-0 w-full backdrop-blur-lg p-4">
           <Shortcuts></Shortcuts>
+          <Credits></Credits>
         </footer>
       </main>
     </GeneratorContextProvider>
